@@ -1,3 +1,5 @@
+const helmet = require('helmet')
+const morgan = require('morgan')
 const Joi = require('joi');
 const logger = require('./logger')
 const express = require('express')
@@ -5,6 +7,11 @@ const app = express();
 const port = process.env.PORT || 3333
 
 app.use(express.json()) //打开接收请求体重JSON对象，默认是关闭的
+app.use(express.urlencoded({extended: true}));  //使服务器能够接受post请求体中的参数
+app.use(express.static('public'))
+app.use(helmet());//Helmet helps you secure your Express apps by setting various HTTP headers. It's not a silver bullet, but it can help!
+app.use(morgan('tiny'))
+
 
 app.use(logger)
 
@@ -39,6 +46,7 @@ app.get('/api/courses/:id', (req, res) => {
 
 app.post('/api/courses', (req, res) => {
     const reqName = req.body.name;
+    console.log(req.body)
     //创建规则
     const { error } = validateCourse(req.body)
     if(error) {
